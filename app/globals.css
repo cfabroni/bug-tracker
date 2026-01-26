@@ -4,6 +4,102 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light theme (default) */
+:root {
+  /* Primary & Accent Colors */
+  --color-primary: #D4816A;
+  --color-primary-light: #E8A591;
+  --color-primary-dark: #B86B56;
+  --color-secondary: #C9B5A0;
+  --color-accent: #D4A9A4;
+
+  /* Backgrounds */
+  --color-background: #FAF8F6;
+  --color-background-secondary: #F2EDE8;
+  --color-card: #FFFFFF;
+  --color-card-elevated: #FFFFFF;
+
+  /* Text Colors */
+  --color-text: #2C2420;
+  --color-text-secondary: #6B5D54;
+  --color-text-tertiary: #9B8B7F;
+  --color-text-inverse: #FFFFFF;
+
+  /* Semantic Colors */
+  --color-success: #7BA86B;
+  --color-destructive: #C85454;
+  --color-warning: #D9A04E;
+  --color-info: #6B95B8;
+
+  /* UI Elements */
+  --color-border: #E5DDD5;
+  --color-border-subtle: #F0E9E3;
+  --color-input-background: #FFFFFF;
+  --color-input-border: #D9CEC2;
+  --color-input-border-focused: #D4816A;
+  --color-placeholder: #B3A59A;
+  --color-overlay: rgba(44, 36, 32, 0.4);
+  --color-shadow: rgba(44, 36, 32, 0.1);
+
+  /* Interactive States */
+  --color-button-background: #F5EDE6;
+  --color-button-background-hover: #EBE0D7;
+  --color-tag-background: #F5EDE6;
+
+  /* Scrollbar */
+  --scrollbar-track: #F2EDE8;
+  --scrollbar-thumb: #D9CEC2;
+  --scrollbar-thumb-hover: #C9B5A0;
+}
+
+/* Dark theme */
+.dark {
+  /* Primary & Accent Colors */
+  --color-primary: #E89577;
+  --color-primary-light: #F0A895;
+  --color-primary-dark: #C87A60;
+  --color-secondary: #8B7865;
+  --color-accent: #B89490;
+
+  /* Backgrounds */
+  --color-background: #1A1512;
+  --color-background-secondary: #241E1A;
+  --color-card: #2D2621;
+  --color-card-elevated: #342E28;
+
+  /* Text Colors */
+  --color-text: #F2EDE8;
+  --color-text-secondary: #C9BDB3;
+  --color-text-tertiary: #998B7F;
+  --color-text-inverse: #1A1512;
+
+  /* Semantic Colors */
+  --color-success: #8CBF79;
+  --color-destructive: #E86B6B;
+  --color-warning: #E8B560;
+  --color-info: #7DA8CF;
+
+  /* UI Elements */
+  --color-border: #3D352E;
+  --color-border-subtle: #322A24;
+  --color-input-background: #2D2621;
+  --color-input-border: #4A3F36;
+  --color-input-border-focused: #E89577;
+  --color-placeholder: #6B5D54;
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Interactive States */
+  --color-button-background: #3D352E;
+  --color-button-background-hover: #4A3F36;
+  --color-tag-background: #3D352E;
+
+  /* Scrollbar */
+  --scrollbar-track: #241E1A;
+  --scrollbar-thumb: #4A3F36;
+  --scrollbar-thumb-hover: #5A4D42;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -13,16 +109,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: var(--scrollbar-thumb-hover);
 }
 
 @keyframes spin {

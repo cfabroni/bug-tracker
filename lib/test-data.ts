@@ -175,9 +175,16 @@ export function generateTestCases() {
     category: string
     title: string
     status: 'untested'
+    ios_status: 'untested'
+    android_status: 'untested'
     notes: string
+    screenshots: never[]
+    created_by: 'seed'
+    updated_at: string
   }> = []
-  
+
+  const now = new Date().toISOString()
+
   initialTestCases.forEach((cat, catIdx) => {
     cat.items.forEach((item, itemIdx) => {
       cases.push({
@@ -185,10 +192,15 @@ export function generateTestCases() {
         category: cat.category,
         title: item,
         status: 'untested',
-        notes: ''
+        ios_status: 'untested',
+        android_status: 'untested',
+        notes: '',
+        screenshots: [],
+        created_by: 'seed',
+        updated_at: now
       })
     })
   })
-  
+
   return cases
 }
