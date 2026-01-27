@@ -348,15 +348,24 @@ export default function Home() {
         na: testCases.filter(tc => tc[field] === STATUS.NA).length,
       }
     }
-    // Combined stats (count if either platform passes)
-    return {
-      total: testCases.length,
-      pass: testCases.filter(tc => tc.ios_status === STATUS.PASS && tc.android_status === STATUS.PASS).length,
-      fail: testCases.filter(tc => tc.ios_status === STATUS.FAIL || tc.android_status === STATUS.FAIL).length,
-      blocked: testCases.filter(tc => tc.ios_status === STATUS.BLOCKED || tc.android_status === STATUS.BLOCKED).length,
-      untested: testCases.filter(tc => tc.ios_status === STATUS.UNTESTED || tc.android_status === STATUS.UNTESTED).length,
-      na: testCases.filter(tc => tc.ios_status === STATUS.NA && tc.android_status === STATUS.NA).length,
+    // Combined stats - each test case counted once based on worst status
+    // Priority: fail > blocked > untested > na > pass
+    let pass = 0, fail = 0, blocked = 0, untested = 0, na = 0
+    for (const tc of testCases) {
+      if (tc.ios_status === STATUS.FAIL || tc.android_status === STATUS.FAIL) {
+        fail++
+      } else if (tc.ios_status === STATUS.BLOCKED || tc.android_status === STATUS.BLOCKED) {
+        blocked++
+      } else if (tc.ios_status === STATUS.UNTESTED || tc.android_status === STATUS.UNTESTED) {
+        untested++
+      } else if (tc.ios_status === STATUS.NA && tc.android_status === STATUS.NA) {
+        na++
+      } else {
+        // Both must be pass (or one pass + one na)
+        pass++
+      }
     }
+    return { total: testCases.length, pass, fail, blocked, untested, na }
   }
 
   const stats = getStats(platformFilter)
@@ -784,16 +793,6 @@ export default function Home() {
                                 {/* Upload Button */}
                                 {uploadingFor === item.id ? (
                                   <div className="flex items-center gap-2">
-                                    <input
-                                      ref={fileInputRef}
-                                      type="file"
-                                      accept="image/*"
-                                      onChange={e => {
-                                        const file = e.target.files?.[0]
-                                        if (file) uploadScreenshot(item.id, file)
-                                      }}
-                                      className="hidden"
-                                    />
                                     <button
                                       onClick={() => fileInputRef.current?.click()}
                                       className="px-2 py-1 bg-button hover:bg-button-hover rounded text-xs flex items-center gap-1"
@@ -917,6 +916,9 @@ export default function Home() {
           if (file && uploadingFor) {
             uploadScreenshot(uploadingFor, file)
           }
+          // Reset input value so the same file can be selected again
+          // and to fix Android file picker issues
+          e.target.value = ''
         }}
       />
     </div>
