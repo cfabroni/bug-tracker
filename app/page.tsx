@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Check, X, Clock, ChevronDown, ChevronRight, Search, RefreshCw, Plus, Trash2, Image, Upload, XCircle, Smartphone, Apple, Ban } from 'lucide-react'
+import { Check, X, Clock, ChevronDown, ChevronRight, Search, RefreshCw, Plus, Trash2, Image, Upload, XCircle, Smartphone, Apple, Ban, Wrench } from 'lucide-react'
 import { supabase, TestCase, TestStatus, Platform, Screenshot } from '@/lib/supabase'
 import { generateTestCases, initialTestCases } from '@/lib/test-data'
 
@@ -11,6 +11,7 @@ const STATUS = {
   FAIL: 'fail' as TestStatus,
   BLOCKED: 'blocked' as TestStatus,
   NA: 'na' as TestStatus,
+  CHECK_FIX: 'check_fix' as TestStatus,
 }
 
 const statusConfig = {
@@ -19,6 +20,7 @@ const statusConfig = {
   [STATUS.FAIL]: { label: 'Fail', color: '#C85454', bg: '#F8E4E4' },
   [STATUS.BLOCKED]: { label: 'Blocked', color: '#D9A04E', bg: '#F8F0E0' },
   [STATUS.NA]: { label: 'N/A', color: '#6B95B8', bg: '#E4EEF4' },
+  [STATUS.CHECK_FIX]: { label: 'Check Fix', color: '#9B6BB8', bg: '#F0E4F4' },
 }
 
 type PlatformFilter = 'both' | 'ios' | 'android'
@@ -352,16 +354,19 @@ export default function Home() {
         blocked: testCases.filter(tc => tc[field] === STATUS.BLOCKED).length,
         untested: testCases.filter(tc => tc[field] === STATUS.UNTESTED).length,
         na: testCases.filter(tc => tc[field] === STATUS.NA).length,
+        check_fix: testCases.filter(tc => tc[field] === STATUS.CHECK_FIX).length,
       }
     }
     // Combined stats - each test case counted once based on worst status
-    // Priority: fail > blocked > untested > na > pass
-    let pass = 0, fail = 0, blocked = 0, untested = 0, na = 0
+    // Priority: fail > blocked > check_fix > untested > na > pass
+    let pass = 0, fail = 0, blocked = 0, untested = 0, na = 0, check_fix = 0
     for (const tc of testCases) {
       if (tc.ios_status === STATUS.FAIL || tc.android_status === STATUS.FAIL) {
         fail++
       } else if (tc.ios_status === STATUS.BLOCKED || tc.android_status === STATUS.BLOCKED) {
         blocked++
+      } else if (tc.ios_status === STATUS.CHECK_FIX || tc.android_status === STATUS.CHECK_FIX) {
+        check_fix++
       } else if (tc.ios_status === STATUS.UNTESTED || tc.android_status === STATUS.UNTESTED) {
         untested++
       } else if (tc.ios_status === STATUS.NA && tc.android_status === STATUS.NA) {
@@ -371,7 +376,7 @@ export default function Home() {
         pass++
       }
     }
-    return { total: testCases.length, pass, fail, blocked, untested, na }
+    return { total: testCases.length, pass, fail, blocked, untested, na, check_fix }
   }
 
   const stats = getStats(platformFilter)
@@ -543,6 +548,7 @@ export default function Home() {
                 { key: 'pass', label: 'Pass', value: stats.pass, color: 'text-success' },
                 { key: 'fail', label: 'Fail', value: stats.fail, color: 'text-destructive' },
                 { key: 'blocked', label: 'Blocked', value: stats.blocked, color: 'text-warning' },
+                { key: 'check_fix', label: 'Check Fix', value: stats.check_fix, color: 'text-purple-500' },
                 { key: 'untested', label: 'Untested', value: stats.untested, color: 'text-text-tertiary' },
               ].map(s => (
                 <div key={s.key} className="text-center">
@@ -591,6 +597,7 @@ export default function Home() {
               { key: STATUS.PASS, label: 'Pass' },
               { key: STATUS.FAIL, label: 'Fail' },
               { key: STATUS.BLOCKED, label: 'Blocked' },
+              { key: STATUS.CHECK_FIX, label: 'Check Fix' },
               { key: STATUS.NA, label: 'N/A' },
             ].map(f => (
               <button
@@ -703,6 +710,7 @@ export default function Home() {
                                 {item.ios_status === STATUS.FAIL && <X size={10} />}
                                 {item.ios_status === STATUS.BLOCKED && <Clock size={10} />}
                                 {item.ios_status === STATUS.NA && <Ban size={10} />}
+                                {item.ios_status === STATUS.CHECK_FIX && <Wrench size={10} />}
                                 {item.ios_status === STATUS.UNTESTED && <span className="w-1.5 h-1.5 rounded-full bg-text-tertiary" />}
                               </button>
                               {/* Android Button */}
@@ -717,6 +725,7 @@ export default function Home() {
                                 {item.android_status === STATUS.FAIL && <X size={10} />}
                                 {item.android_status === STATUS.BLOCKED && <Clock size={10} />}
                                 {item.android_status === STATUS.NA && <Ban size={10} />}
+                                {item.android_status === STATUS.CHECK_FIX && <Wrench size={10} />}
                                 {item.android_status === STATUS.UNTESTED && <span className="w-1.5 h-1.5 rounded-full bg-text-tertiary" />}
                               </button>
                             </div>
@@ -870,7 +879,7 @@ export default function Home() {
 
         {/* Footer */}
         <div className="mt-8 py-4 text-center text-text-tertiary text-xs">
-          Click platform buttons to cycle: Untested → Pass → Fail → Blocked → N/A
+          Click platform buttons to cycle: Untested → Pass → Fail → Blocked → N/A → Check Fix
           <br />
           Data syncs with Supabase
         </div>

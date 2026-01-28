@@ -5,7 +5,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export type TestStatus = 'untested' | 'pass' | 'fail' | 'blocked' | 'na'
+export type TestStatus = 'untested' | 'pass' | 'fail' | 'blocked' | 'na' | 'check_fix'
 export type Platform = 'ios' | 'android'
 
 export interface Screenshot {
