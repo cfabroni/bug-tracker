@@ -44,6 +44,12 @@ export default function Home() {
   const [uploadingFor, setUploadingFor] = useState<string | null>(null)
   const [previewImage, setPreviewImage] = useState<Screenshot | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const uploadingForRef = useRef<string | null>(null)
+
+  // Sync uploadingFor to ref to avoid stale closure in file input onChange
+  useEffect(() => {
+    uploadingForRef.current = uploadingFor
+  }, [uploadingFor])
 
   // Get unique categories from test cases
   const categories = Array.from(new Set(testCases.map(tc => tc.category)))
@@ -913,8 +919,9 @@ export default function Home() {
         className="hidden"
         onChange={e => {
           const file = e.target.files?.[0]
-          if (file && uploadingFor) {
-            uploadScreenshot(uploadingFor, file)
+          const currentUploadingFor = uploadingForRef.current
+          if (file && currentUploadingFor) {
+            uploadScreenshot(currentUploadingFor, file)
           }
           // Reset input value so the same file can be selected again
           // and to fix Android file picker issues
